@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>角色造型参考库 · 素材墙</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">角色造型<span>参考库</span></div>
+  <nav>
+    <a href="index.html" class="on">素材墙</a>
+    <a href="cards.html">细节卡</a>
+  </nav>
+  <div class="search"><input id="q" placeholder="搜名称 / 描述 / 提示词 / 标签，如：交领、步摇、双丫髻"></div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="hd" id="cnt">共 0 张</div>
+    <a href="#" data-g="" class="g1">全部</a>
+    <div id="toc"></div>
+  </aside>
+  <main>
+    <h1 id="title">全部素材</h1>
+    <div class="sub" id="sub" style="color:#8b8f98;font-size:13px;margin:-8px 0 14px"></div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none">没有匹配的素材</div>
+  </main>
+</div>
+
+<div class="lb" id="lb">
+  <span class="x" id="lbx">✕</span>
+  <span class="nav l" id="lbl">‹</span>
+  <img id="lbimg" alt="">
+  <span class="nav r" id="lbr">›</span>
+  <div class="cap" id="lbcap"></div>
+</div>
+
+<script>
+let ALL = [], CUR = [], IDX = -1, FILTER = "";
+const $ = s => document.querySelector(s);
+
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function toc(){
+  const g = {};
+  ALL.forEach(it => { g[it.group] = (g[it.group]||0) + 1; });
+  const box = $("#toc"); box.innerHTML = "";
+  const order = {"女":0, "男":1};
+  const roots = [...new Set(Object.keys(g).map(k => k.split("/")[0]))]
+    .sort((a,b) => { const oa = order[a] ?? 9, ob = order[b] ?? 9; return oa-ob || a.localeCompare(b,"zh"); });
+  roots.forEach(root => {
+    const kids = Object.keys(g).filter(k => k.split("/")[0] === root)
+      .sort((a,b) => {
+        const ga = a.split("/")[1]==="女"?0:(a.split("/")[1]==="男"?1:2);
+        const gb = b.split("/")[1]==="女"?0:(b.split("/")[1]==="男"?1:2);
+        return ga-gb || a.localeCompare(b,"zh");
+      });
+    const total = kids.reduce((s,k) => s + g[k], 0);
+    const h = document.createElement("a");
+    h.href = "#"; h.dataset.g = root; h.className = "g1";
+    h.innerHTML = "<span>" + esc(root) + "</span><span>" + total + "</span>";
+    h.onclick = e => { e.preventDefault(); setGroup(root); };
+    box.appendChild(h);
+    kids.forEach(k => {
+      const label = k.split("/").slice(1).join(" / ");
+      const a = document.createElement("a");
+      a.href = "#"; a.dataset.g = k; a.className = "g2";
+      a.innerHTML = "<span>" + esc(label) + "</span><span>" + g[k] + "</span>";
+      a.onclick = e => { e.preventDefault(); setGroup(k); };
+      box.appendChild(a);
+    });
+  });
+}
+
+function setGroup(k){
+  FILTER = k;
+  document.querySelectorAll("aside a").forEach(a=>a.classList.toggle("on", a.dataset.g===k));
+  render();
+}
+
+function match(it, q){
+  if(!q) return true;
+  q = q.toLowerCase();
+  return (it.name+" "+it.desc+" "+it.prompt+" "+it.group+" "+(it.tags||[]).join(" ")).toLowerCase().includes(q);
+}
+
+function render(){
+  const q = $("#q").value.trim();
+  CUR = ALL.filter(it => (!FILTER || it.group===FILTER || it.group.startsWith(FILTER+"/")) && match(it,q));
+  $("#title").textContent = FILTER || "全部素材";
+  $("#sub").textContent = q ? `搜索「${q}」· ${CUR.length} 张` : `${CUR.length} 张`;
+  $("#empty").style.display = CUR.length ? "none" : "block";
+  const grid = $("#grid"); grid.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  CUR.forEach((it,i)=>{
+    const d = document.createElement("div"); d.className="card";
+    const tags = (it.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+    d.innerHTML = `<div class="pic"><img loading="lazy" src="img/${it.path}" alt=""></div>
+      <div class="meta"><div class="nm">${esc(it.name||it.path.split("/").pop())}</div>
+      ${it.desc?`<div class="ds">${esc(it.desc)}</div>`:""}
+      ${tags?`<div>${tags}</div>`:""}
+      ${it.prompt?`<div class="prompt">${esc(it.prompt)}</div>`:""}</div>`;
+    d.querySelector(".pic").onclick = ()=>open(i);
+    frag.appendChild(d);
+  });
+  grid.appendChild(frag);
+  $("#cnt").textContent = `共 ${ALL.length} 张`;
+}
+
+function open(i){
+  IDX = i; const it = CUR[i];
+  $("#lbimg").src = "img/"+it.path;
+  $("#lbcap").textContent = [it.name, it.desc].filter(Boolean).join(" · ");
+  $("#lb").classList.add("on");
+}
+function step(d){
+  if(IDX<0) return;
+  IDX = (IDX + d + CUR.length) % CUR.length;
+  open(IDX);
+}
+$("#lbx").onclick = ()=> $("#lb").classList.remove("on");
+$("#lbl").onclick = e=>{e.stopPropagation(); step(-1)};
+$("#lbr").onclick = e=>{e.stopPropagation(); step(1)};
+$("#lb").onclick = e=>{ if(e.target.id==="lb") $("#lb").classList.remove("on"); };
+document.addEventListener("keydown", e=>{
+  if(!$("#lb").classList.contains("on")) return;
+  if(e.key==="Escape") $("#lb").classList.remove("on");
+  if(e.key==="ArrowLeft") step(-1);
+  if(e.key==="ArrowRight") step(1);
+});
+$("#q").addEventListener("input", render);
+
+fetch("data/wall.json").then(r=>r.json()).then(d=>{
+  ALL = d; toc(); render();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>角色造型参考库 · 细节卡</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">角色造型<span>参考库</span></div>
+  <nav>
+    <a href="index.html">素材墙</a>
+    <a href="cards.html" class="on">细节卡</a>
+  </nav>
+  <div class="search"><input id="q" placeholder="搜细节名称或提示词，如：腰封、珠花、交领"></div>
+</header>
+
+<main style="max-width:1180px;margin:0 auto">
+  <h1>细节卡 <small id="sub"></small></h1>
+  <div class="cards" id="list"></div>
+  <div class="empty" id="empty" style="display:none">没有匹配的细节卡</div>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+let ALL = [];
+
+function render(){
+  const q = $("#q").value.trim().toLowerCase();
+  const list = ALL.filter(c => !q || (c.id+c.title+c.points.map(p=>p.name+p.prompt).join(" ")).toLowerCase().includes(q));
+  $("#sub").textContent = `${list.length} / ${ALL.length} 张`;
+  $("#empty").style.display = list.length ? "none":"block";
+  const box = $("#list"); box.innerHTML = "";
+  list.forEach(c=>{
+    const d = document.createElement("div"); d.className="dcard";
+    const pts = c.points.map((p,i)=>`
+      <div class="pt">
+        ${p.crop?`<img loading="lazy" src="${esc(p.crop)}" alt="">`:""}
+        <div>
+          <div class="nm"><i>${i+1}</i>${esc(p.name)}</div>
+          <div class="pr">${esc(p.prompt)}</div>
+          <div class="pit">⚠ ${esc(p.pit)}</div>
+        </div>
+      </div>`).join("");
+    d.innerHTML = `<div class="top"><span class="id">${esc(c.id)}</span><span class="ti">${esc(c.title)}</span></div>
+      <div class="body"><div><img class="hero" loading="lazy" src="${esc(c.img)}" alt=""></div>
+      <div class="pts">${pts}</div></div>`;
+    box.appendChild(d);
+  });
+}
+$("#q").addEventListener("input", render);
+fetch("data/cards.json").then(r=>r.json()).then(d=>{ ALL=d; render(); });
+</script>
+</body>
+</html>
