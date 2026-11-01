@@ -16,20 +16,61 @@
   <div class="search"><input id="q" placeholder="搜细节名称或提示词，如：腰封、珠花、交领"></div>
 </header>
 
-<main style="max-width:1180px;margin:0 auto">
-  <h1>细节卡 <small id="sub"></small></h1>
-  <div class="cards" id="list"></div>
-  <div class="empty" id="empty" style="display:none">没有匹配的细节卡</div>
-</main>
+<div class="wrap">
+  <aside>
+    <div class="hd" id="cnt">细节卡</div>
+    <a href="#" data-g="" id="allLink" class="g1 on">全部</a>
+    <div id="toc"></div>
+  </aside>
+  <main>
+    <h1 id="title">全部细节卡 <small id="sub"></small></h1>
+    <div class="cards" id="list"></div>
+    <div class="empty" id="empty" style="display:none">没有匹配的细节卡</div>
+  </main>
+</div>
 
 <script>
 const $ = s => document.querySelector(s);
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-let ALL = [];
+let ALL = [], FILTER = "";
+
+function cat(id){                       // 面部-女-001 → 面部
+  const p = id.split("-");
+  return p[0] + (p[1]==="女"||p[1]==="男" ? "" : "");
+}
+function gender(id){
+  const p = id.split("-");
+  return (p[1]==="女"||p[1]==="男") ? p[1] : "";
+}
+function group(c){
+  const g = gender(c.id);
+  return (g ? g + " / " : "") + cat(c.id);
+}
+
+function toc(){
+  const g = {};
+  ALL.forEach(c => { const k = group(c); g[k] = (g[k]||0)+1; });
+  const box = $("#toc"); box.innerHTML = "";
+  Object.keys(g).sort((a,b)=>{
+    const o = x => x.startsWith("女") ? 0 : x.startsWith("男") ? 1 : 2;
+    return o(a)-o(b) || a.localeCompare(b,"zh");
+  }).forEach(k=>{
+    const a = document.createElement("a");
+    a.href="#"; a.dataset.g=k;
+    a.innerHTML = "<span>"+esc(k)+"</span><span>"+g[k]+"</span>";
+    a.onclick = e=>{ e.preventDefault(); FILTER=k; document.querySelectorAll("aside a").forEach(x=>x.classList.toggle("on",(x.dataset.g||"")===k)); render(); };
+    box.appendChild(a);
+  });
+}
 
 function render(){
   const q = $("#q").value.trim().toLowerCase();
-  const list = ALL.filter(c => !q || (c.id+c.title+c.points.map(p=>p.name+p.prompt).join(" ")).toLowerCase().includes(q));
+  const list = ALL.filter(c => {
+    if (FILTER && group(c) !== FILTER) return false;
+    if (!q) return true;
+    return (c.id+c.title+c.points.map(p=>p.name+p.prompt+p.pit).join(" ")).toLowerCase().includes(q);
+  });
+  $("#title").textContent = FILTER || "全部细节卡";
   $("#sub").textContent = `${list.length} / ${ALL.length} 张`;
   $("#empty").style.display = list.length ? "none":"block";
   const box = $("#list"); box.innerHTML = "";
@@ -49,9 +90,11 @@ function render(){
       <div class="pts">${pts}</div></div>`;
     box.appendChild(d);
   });
+  $("#cnt").textContent = "共 " + ALL.length + " 张";
 }
 $("#q").addEventListener("input", render);
-fetch("data/cards.json").then(r=>r.json()).then(d=>{ ALL=d; render(); });
+$("#allLink").onclick = e => { e.preventDefault(); FILTER=""; document.querySelectorAll("aside a").forEach(x=>x.classList.toggle("on", (x.dataset.g||"")==="")); render(); };
+fetch("data/cards.json").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
 </script>
 </body>
 </html>
