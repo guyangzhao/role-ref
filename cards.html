@@ -96,7 +96,7 @@ function render(){
 }
 $("#q").addEventListener("input", render);
 $("#allLink").onclick = e => { e.preventDefault(); FILTER=""; document.querySelectorAll("aside a").forEach(x=>x.classList.toggle("on", (x.dataset.g||"")==="")); render(); };
-fetch("data/cards.json?v=1793594549").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
+fetch("data/cards.json?v=1793594598").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
 </script>
 
 <div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0d0e11;display:flex;align-items:center;justify-content:center;font-family:system-ui,'Microsoft YaHei',sans-serif">
