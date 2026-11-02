@@ -14,6 +14,7 @@
     <a href="cards.html">细节卡</a>
     <a href="videos.html">视频库</a>
   </nav>
+  <button class="themebtn" id="themeBtn" title="切换白天/夜晚模式">☾</button>
   <div class="search"><input id="q" placeholder="搜名称 / 描述 / 提示词 / 标签，如：交领、步摇、双丫髻"></div>
 </header>
 
@@ -134,7 +135,7 @@ document.addEventListener("keydown", e=>{
 });
 $("#q").addEventListener("input", render);
 
-fetch("data/wall.json?v=1793592992").then(r=>r.json()).then(d=>{
+fetch("data/wall.json?v=1793593398").then(r=>r.json()).then(d=>{
   ALL = d; toc(); render();
 });
 </script>
@@ -162,6 +163,25 @@ fetch("data/wall.json?v=1793592992").then(r=>r.json()).then(d=>{
   document.getElementById("gateBtn").addEventListener("click", go);
   inp.addEventListener("keydown", function(e){ if (e.key === "Enter") go(); });
   inp.focus();
+})();
+</script>
+
+
+<script>
+(function(){
+  var KEY='rr_theme';
+  function apply(t){document.documentElement.setAttribute('data-theme',t);
+    var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'☀':'☾';}
+  var t='dark';
+  try{ t = localStorage.getItem(KEY) || 'dark'; }catch(e){}
+  apply(t);
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id==='themeBtn'){
+      var cur = document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+      try{ localStorage.setItem(KEY, cur); }catch(e){}
+      apply(cur);
+    }
+  });
 })();
 </script>
 

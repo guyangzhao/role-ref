@@ -7,17 +7,17 @@
 <link rel="stylesheet" href="style.css">
 <style>
 .vygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:16px}
-.vcard{background:#15171b;border:1px solid #26282e;border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;display:flex;flex-direction:column}
-.vcard:hover{transform:translateY(-3px);border-color:#c9a227}
-.vcard .thumb{position:relative;aspect-ratio:3/4;background:#0c0d10;overflow:hidden}
+.vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;display:flex;flex-direction:column}
+.vcard:hover{transform:translateY(-3px);border-color:var(--accent)}
+.vcard .thumb{position:relative;aspect-ratio:3/4;background:var(--bg2);overflow:hidden}
 .vcard .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.vcard .thumb .ph{display:flex;align-items:center;justify-content:center;height:100%;color:#4a4d55;font-size:12px}
+.vcard .thumb .ph{display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx3);font-size:12px}
 .vcard .like{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.62);color:#fff;font-size:11px;padding:2px 6px;border-radius:6px}
 .vcard .body{padding:9px 10px 11px;display:flex;flex-direction:column;gap:6px}
-.vcard .t{font-size:13px;line-height:1.45;color:#e8e8ea;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.vcard .meta{font-size:11px;color:#8b8f98}
+.vcard .t{font-size:13px;line-height:1.45;color:var(--tx);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vcard .meta{font-size:11px;color:var(--tx2)}
 .vcard .tags{display:flex;gap:5px;flex-wrap:wrap}
-.vcard .tag{font-size:10px;color:#b9a06a;border:1px solid #3a3527;background:#1d1b15;border-radius:999px;padding:1px 7px}
+.vcard .tag{font-size:10px;color:var(--accent);border:1px solid var(--line);background:var(--bg2);border-radius:999px;padding:1px 7px}
 </style>
 </head>
 <body>
@@ -28,6 +28,7 @@
     <a href="cards.html">细节卡</a>
     <a href="videos.html" class="on">视频库</a>
   </nav>
+  <button class="themebtn" id="themeBtn" title="切换白天/夜晚模式">☾</button>
   <div class="search"><input id="q" placeholder="搜标题 / 作者 / 话题"></div>
 </header>
 
@@ -77,6 +78,25 @@ document.querySelectorAll('aside [data-cat]').forEach(el => el.addEventListener(
 document.getElementById('q').addEventListener('input', e => { q = e.target.value.trim().toLowerCase(); render(); });
 render();
 </script>
+
+<script>
+(function(){
+  var KEY='rr_theme';
+  function apply(t){document.documentElement.setAttribute('data-theme',t);
+    var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'☀':'☾';}
+  var t='dark';
+  try{ t = localStorage.getItem(KEY) || 'dark'; }catch(e){}
+  apply(t);
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id==='themeBtn'){
+      var cur = document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+      try{ localStorage.setItem(KEY, cur); }catch(e){}
+      apply(cur);
+    }
+  });
+})();
+</script>
+
 
 <div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0d0e11;display:flex;align-items:center;justify-content:center;font-family:system-ui,'Microsoft YaHei',sans-serif">
   <div style="width:320px;text-align:center">

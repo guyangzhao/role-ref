@@ -13,6 +13,7 @@
     <a href="index.html">素材墙</a>
     <a href="cards.html" class="on">细节卡</a>
   </nav>
+  <button class="themebtn" id="themeBtn" title="切换白天/夜晚模式">☾</button>
   <div class="search"><input id="q" placeholder="搜细节名称或提示词，如：腰封、珠花、交领"></div>
 </header>
 
@@ -95,7 +96,7 @@ function render(){
 }
 $("#q").addEventListener("input", render);
 $("#allLink").onclick = e => { e.preventDefault(); FILTER=""; document.querySelectorAll("aside a").forEach(x=>x.classList.toggle("on", (x.dataset.g||"")==="")); render(); };
-fetch("data/cards.json?v=1793592992").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
+fetch("data/cards.json?v=1793593398").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
 </script>
 
 <div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0d0e11;display:flex;align-items:center;justify-content:center;font-family:system-ui,'Microsoft YaHei',sans-serif">
@@ -121,6 +122,25 @@ fetch("data/cards.json?v=1793592992").then(r=>r.json()).then(d=>{ ALL=d; toc(); 
   document.getElementById("gateBtn").addEventListener("click", go);
   inp.addEventListener("keydown", function(e){ if (e.key === "Enter") go(); });
   inp.focus();
+})();
+</script>
+
+
+<script>
+(function(){
+  var KEY='rr_theme';
+  function apply(t){document.documentElement.setAttribute('data-theme',t);
+    var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'☀':'☾';}
+  var t='dark';
+  try{ t = localStorage.getItem(KEY) || 'dark'; }catch(e){}
+  apply(t);
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id==='themeBtn'){
+      var cur = document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+      try{ localStorage.setItem(KEY, cur); }catch(e){}
+      apply(cur);
+    }
+  });
 })();
 </script>
 
