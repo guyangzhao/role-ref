@@ -60,7 +60,7 @@ let DATA = [], cat = 'all', q = '', EDIT = false, pending = 0;
 const list = document.getElementById('list'), sub = document.getElementById('sub'), title = document.getElementById('title');
 
 async function loadData(){
-  const r = await fetch('data/videos.json?v=' + Date.now());
+  const r = await fetch('data/videos-4a820a90.json');
   DATA = await r.json();
   document.querySelector('aside .hd').textContent = '视频库 · ' + DATA.length;
   render();
