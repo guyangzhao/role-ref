@@ -148,6 +148,8 @@ render();
 </script>
 
 
+
+
 <div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0d0e11;display:flex;align-items:center;justify-content:center;font-family:system-ui,'Microsoft YaHei',sans-serif">
   <div style="width:320px;text-align:center">
     <div style="color:#c9a227;font-size:20px;letter-spacing:.08em;margin-bottom:6px">角色造型参考库</div>
@@ -160,6 +162,9 @@ render();
 <script>
 (function(){
   var PASS = "hanfu2026";
+  if (location.hostname === "127.0.0.1" || location.hostname === "localhost") {
+    var g0 = document.getElementById("gate"); if (g0) g0.remove(); return;
+  }
   try { if (localStorage.getItem("rr_ok") === PASS) { document.getElementById("gate").remove(); return; } } catch(e) {}
   var inp = document.getElementById("gateInput"), msg = document.getElementById("gateMsg");
   function go(){

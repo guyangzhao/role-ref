@@ -135,36 +135,11 @@ document.addEventListener("keydown", e=>{
 });
 $("#q").addEventListener("input", render);
 
-fetch("data/wall.json?v=1793595379").then(r=>r.json()).then(d=>{
+fetch("data/wall.json?v=1793595513").then(r=>r.json()).then(d=>{
   ALL = d; toc(); render();
 });
 </script>
 
-<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0d0e11;display:flex;align-items:center;justify-content:center;font-family:system-ui,'Microsoft YaHei',sans-serif">
-  <div style="width:320px;text-align:center">
-    <div style="color:#c9a227;font-size:20px;letter-spacing:.08em;margin-bottom:6px">角色造型参考库</div>
-    <div style="color:#8b8f98;font-size:12px;margin-bottom:22px">内部资料 · 请输入访问密码</div>
-    <input id="gateInput" type="password" placeholder="访问密码" style="width:100%;padding:11px 12px;border-radius:8px;border:1px solid #2a2c31;background:#15171b;color:#e6e6e6;outline:none" />
-    <div id="gateMsg" style="color:#e06c5a;font-size:12px;height:18px;margin-top:8px"></div>
-    <button id="gateBtn" style="width:100%;margin-top:6px;padding:11px;border-radius:8px;border:0;background:#c9a227;color:#1a1a1a;font-weight:600;cursor:pointer">进入</button>
-  </div>
-</div>
-<script>
-(function(){
-  var PASS = "hanfu2026";
-  try { if (localStorage.getItem("rr_ok") === PASS) { document.getElementById("gate").remove(); return; } } catch(e) {}
-  var inp = document.getElementById("gateInput"), msg = document.getElementById("gateMsg");
-  function go(){
-    if (inp.value === PASS) {
-      try { localStorage.setItem("rr_ok", PASS); } catch(e) {}
-      document.getElementById("gate").remove();
-    } else { msg.textContent = "密码不对"; }
-  }
-  document.getElementById("gateBtn").addEventListener("click", go);
-  inp.addEventListener("keydown", function(e){ if (e.key === "Enter") go(); });
-  inp.focus();
-})();
-</script>
 
 
 <script>
@@ -182,6 +157,36 @@ fetch("data/wall.json?v=1793595379").then(r=>r.json()).then(d=>{
       apply(cur);
     }
   });
+})();
+</script>
+
+
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0d0e11;display:flex;align-items:center;justify-content:center;font-family:system-ui,'Microsoft YaHei',sans-serif">
+  <div style="width:320px;text-align:center">
+    <div style="color:#c9a227;font-size:20px;letter-spacing:.08em;margin-bottom:6px">角色造型参考库</div>
+    <div style="color:#8b8f98;font-size:12px;margin-bottom:22px">内部资料 · 请输入访问密码</div>
+    <input id="gateInput" type="password" placeholder="访问密码" style="width:100%;padding:11px 12px;border-radius:8px;border:1px solid #2a2c31;background:#15171b;color:#e6e6e6;outline:none" />
+    <div id="gateMsg" style="color:#e06c5a;font-size:12px;height:18px;margin-top:8px"></div>
+    <button id="gateBtn" style="width:100%;margin-top:6px;padding:11px;border-radius:8px;border:0;background:#c9a227;color:#1a1a1a;font-weight:600;cursor:pointer">进入</button>
+  </div>
+</div>
+<script>
+(function(){
+  var PASS = "hanfu2026";
+  if (location.hostname === "127.0.0.1" || location.hostname === "localhost") {
+    var g0 = document.getElementById("gate"); if (g0) g0.remove(); return;
+  }
+  try { if (localStorage.getItem("rr_ok") === PASS) { document.getElementById("gate").remove(); return; } } catch(e) {}
+  var inp = document.getElementById("gateInput"), msg = document.getElementById("gateMsg");
+  function go(){
+    if (inp.value === PASS) {
+      try { localStorage.setItem("rr_ok", PASS); } catch(e) {}
+      document.getElementById("gate").remove();
+    } else { msg.textContent = "密码不对"; }
+  }
+  document.getElementById("gateBtn").addEventListener("click", go);
+  inp.addEventListener("keydown", function(e){ if (e.key === "Enter") go(); });
+  inp.focus();
 })();
 </script>
 
