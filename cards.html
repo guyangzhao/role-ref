@@ -12,6 +12,8 @@
   <nav>
     <a href="index.html">素材墙</a>
     <a href="cards.html" class="on">细节卡</a>
+    <a href="videos.html">视频库</a>
+    <a href="mj.html">MJ 图库</a>
   </nav>
   <button class="themebtn" id="themeBtn" title="切换白天/夜晚模式">☾</button>
   <div class="search"><input id="q" placeholder="搜细节名称或提示词，如：腰封、珠花、交领"></div>
@@ -96,7 +98,7 @@ function render(){
 }
 $("#q").addEventListener("input", render);
 $("#allLink").onclick = e => { e.preventDefault(); FILTER=""; document.querySelectorAll("aside a").forEach(x=>x.classList.toggle("on", (x.dataset.g||"")==="")); render(); };
-fetch("data/cards.json?v=1793597720").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
+fetch("data/cards.json?v=1793602065").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
 </script>
 
 
