@@ -12,6 +12,8 @@
 .mjcard .thumb{position:relative;aspect-ratio:4/3;background:var(--bg2);overflow:hidden;cursor:zoom-in}
 .mjcard .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .mjcard .no{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#e8dcc0;font-size:11px;padding:2px 7px;border-radius:6px}
+.mjcard .fav{position:absolute;right:8px;top:8px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:15px;line-height:1;cursor:pointer;z-index:2}
+.mjcard .fav.on{background:var(--accent);color:#1a1a1a}
 .mjcard .bd{padding:9px 10px 11px;display:flex;flex-direction:column;gap:6px}
 .mjcard .st{font-size:13px;color:var(--tx);font-weight:600;line-height:1.35}
 .mjcard .cd{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--accent2);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:4px 6px;word-break:break-all}
@@ -65,12 +67,13 @@ const list = document.getElementById('list'), sub = document.getElementById('sub
 
 async function boot(){
   const r = await fetch('data/mj-5359137c.json'); DATA = await r.json();
-  buildNav(); render();
+  buildNav(); saveFav(); render();
 }
 function buildNav(){
   const w = document.getElementById('navwrap');
   const counts = {all: DATA.cards.length};
   let html = '<a href="#" data-k="all" class="g1 on">全部</a>';
+  html += `<a href="#" data-k="fav" class="g1">★ 收藏 <span style="color:var(--tx3)" id="favn">0</span></a>`;
   for(const sec of ['char','scene','juwu']){
     const subs = Object.entries(DATA.subcats).filter(([k,v]) => v.section === sec);
     if(!subs.length) continue;
@@ -84,18 +87,18 @@ function buildNav(){
   w.querySelectorAll('a').forEach(a => a.onclick = ev => {
     ev.preventDefault(); cur = a.dataset.k;
     w.querySelectorAll('a').forEach(x => x.classList.toggle('on', x === a));
-    title.textContent = cur === 'all' ? '全部' : (DATA.subcats[cur] ? DATA.subcats[cur].name : '');
+    title.textContent = cur === 'all' ? '全部' : (cur === 'fav' ? '收藏' : (DATA.subcats[cur] ? DATA.subcats[cur].name : ''));
     render();
   });
 }
 function render(){
-  const arr = DATA.cards.filter(c => (cur === 'all' || c.sub === cur) &&
+  const arr = DATA.cards.filter(c => (cur === 'all' || (cur === 'fav' ? FAV.has(c.key) : c.sub === cur)) &&
     (!q || (c.style+' '+c.tone+' '+c.medium+' '+c.prompt+' '+c.code).toLowerCase().includes(q)));
   sub.textContent = arr.length + ' / ' + DATA.cards.length + ' 张';
   list.innerHTML = arr.map(c => `
     <div class="mjcard">
       <div class="thumb" onclick="openM('${c.key}')"><img loading="lazy" src="${c.img}" alt="">
-        <div class="no">#${c.num} ${c.badge==='multi'?'· 混码':''}</div></div>
+        <div class="no">#${c.num} ${c.badge==='multi'?'· 混码':''}</div><button class="fav ${FAV.has(c.key)?'on':''}" onclick="toggleFav(event,'${c.key}')">${FAV.has(c.key)?'★':'☆'}</button></div>
       <div class="bd">
         <div class="st">${c.style || '（无风格标签）'}</div>
         <div class="cd">${c.code || ''}</div>
@@ -105,6 +108,9 @@ function render(){
       </div>
     </div>`).join('');
 }
+const FAV = new Set(JSON.parse(localStorage.getItem('mj_favs') || '[]'));
+function saveFav(){ localStorage.setItem('mj_favs', JSON.stringify([...FAV])); const n = document.getElementById('favn'); if(n) n.textContent = FAV.size; }
+function toggleFav(ev, k){ ev.stopPropagation(); ev.preventDefault(); FAV.has(k) ? FAV.delete(k) : FAV.add(k); saveFav(); render(); toast(FAV.has(k) ? '已收藏' : '已取消收藏'); }
 function find(k){ return DATA.cards.find(c => c.key === k); }
 function cp(t){ navigator.clipboard.writeText(t).then(()=>toast('已复制')).catch(()=>toast('复制失败')); }
 function cpCode(k){ const c = find(k); cp(c.code); }

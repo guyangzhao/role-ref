@@ -141,7 +141,7 @@ function updateBar(){
 }
 
 fetch('/api/ping').then(r=>r.json()).then(()=>{
-  EDIT = true;
+  EDIT = true; render();
   const b = document.createElement('div');
   b.id = 'editbar';
   b.innerHTML = '编辑模式 <span class="pend">无改动</span>' +
