@@ -98,7 +98,7 @@ function render(){
 }
 $("#q").addEventListener("input", render);
 $("#allLink").onclick = e => { e.preventDefault(); FILTER=""; document.querySelectorAll("aside a").forEach(x=>x.classList.toggle("on", (x.dataset.g||"")==="")); render(); };
-fetch("data/cards.json?v=1793602065").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
+fetch("data/cards.json?v=1793760996").then(r=>r.json()).then(d=>{ ALL=d; toc(); render(); });
 </script>
 
 
