@@ -40,7 +40,7 @@
 
 <div class="wrap">
   <aside>
-    <div class="hd">视频库 · 217</div>
+    <div class="hd">视频库 · 234</div>
     <a href="#" data-cat="all" class="g1 on">全部</a>
     <a href="#" data-cat="teach" class="g1">教学视频</a>
     <a href="#" data-cat="visual" class="g1">优质参考 · 画面</a>
@@ -61,7 +61,7 @@ let DATA = [], cat = 'all', q = '', EDIT = false, pending = 0;
 const list = document.getElementById('list'), sub = document.getElementById('sub'), title = document.getElementById('title');
 
 async function loadData(){
-  const r = await fetch('data/videos-c8c55acf.json');
+  const r = await fetch('data/videos-96b57908.json');
   DATA = await r.json();
   document.querySelector('aside .hd').textContent = '视频库 · ' + DATA.length;
   render();
